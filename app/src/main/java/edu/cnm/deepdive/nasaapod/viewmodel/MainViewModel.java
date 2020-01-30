@@ -12,6 +12,7 @@ import com.google.gson.GsonBuilder;
 import edu.cnm.deepdive.nasaapod.BuildConfig;
 import edu.cnm.deepdive.nasaapod.model.Apod;
 import edu.cnm.deepdive.nasaapod.service.ApodService;
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -23,15 +24,21 @@ public class MainViewModel extends AndroidViewModel {
 
   private Date apodDate;
   private MutableLiveData<Apod> apod;
+  private MutableLiveData<Throwable> throwable;
 
   public MainViewModel(@NonNull Application application) {
     super(application);
     apod = new MutableLiveData<>();
+    throwable = new MutableLiveData<>();
     setApodDate(new Date()); // TODO Investigate adjustment for NASA APOD-relevant time zone.
   }
 
   public LiveData<Apod> getApod() {
     return apod;
+  }
+
+  public LiveData<Throwable> getThrowable() {
+    return throwable;
   }
 
   public  void setApodDate(Date date) {
@@ -63,10 +70,11 @@ public class MainViewModel extends AndroidViewModel {
           MainViewModel.this.apod.postValue(apod);
 
         } else {
-          Log.e("ApodService", response.message());
+          throw new RuntimeException(response.message());
         }
-      } catch (Exception e) {
+      } catch (IOException | RuntimeException e) {
         Log.e("ApodService", e.getMessage(), e);
+        throwable.postValue(e);
       }
     }
   }
