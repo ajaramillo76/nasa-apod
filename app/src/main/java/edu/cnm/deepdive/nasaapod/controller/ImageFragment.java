@@ -18,11 +18,15 @@ import androidx.lifecycle.ViewModelProvider;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import edu.cnm.deepdive.android.DateTimePickerFragment;
+import edu.cnm.deepdive.android.DateTimePickerFragment.Mode;
+import edu.cnm.deepdive.android.DateTimePickerFragment.OnChangeListener;
 import edu.cnm.deepdive.nasaapod.BuildConfig;
 import edu.cnm.deepdive.nasaapod.R;
 import edu.cnm.deepdive.nasaapod.model.Apod;
 import edu.cnm.deepdive.nasaapod.service.ApodService;
 import edu.cnm.deepdive.nasaapod.viewmodel.MainViewModel;
+import java.util.Calendar;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -43,6 +47,8 @@ public class ImageFragment extends Fragment {
     loading = root.findViewById(R.id.loading);
     calendar = root.findViewById(R.id.calendar);
     setupWebView(root);
+    setupCalendarPicker(Calendar
+        .getInstance()); // represents this instance in time and the time zone it was created in.
     return root;
   }
 
@@ -51,7 +57,12 @@ public class ImageFragment extends Fragment {
     super.onViewCreated(view, savedInstanceState);
     viewModel = new ViewModelProvider(getActivity()).get(MainViewModel.class);
     viewModel.getApod().observe(getViewLifecycleOwner(),
-        (Apod apod) -> contentView.loadUrl(apod.getUrl()));
+        (Apod apod) -> {
+          contentView.loadUrl(apod.getUrl());
+          Calendar calendar = Calendar.getInstance();
+          calendar.setTime(apod.getDate());
+          setupCalendarPicker(calendar);
+        });
 
   }
 
@@ -75,6 +86,19 @@ public class ImageFragment extends Fragment {
     settings.setDisplayZoomControls(false);
     settings.setUseWideViewPort(true);
     settings.setLoadWithOverviewMode(true);
+  }
+
+  private void setupCalendarPicker(Calendar calendar) {
+    this.calendar.setOnClickListener((v) -> {  // method to show calendar once pressed.
+      DateTimePickerFragment fragment = new DateTimePickerFragment();
+      fragment.setCalendar(calendar);
+      fragment.setMode(Mode.DATE);
+      fragment.setOnChangeListener((cal) -> { // functional interface, replaced with lambda
+        loading.setVisibility((View.VISIBLE));
+        viewModel.setApodDate((cal).getTime());
+      });
+      fragment.show(getChildFragmentManager(), fragment.getClass().getName());
+    });
   }
 
 
