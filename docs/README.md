@@ -1,10 +1,10 @@
-# Overview
+# Overview 
 
 ## Introduction
 
 NASA APod is a service provided by NASA....
 
-NASA APoD Browser is an Android-based clien for the NASA APoD Service.
+NASA APoD Browser is an Android-based client for the NASA APoD Service.
 
 ## Inteded users
 
@@ -15,3 +15,5 @@ NASA APoD Browser is an Android-based clien for the NASA APoD Service.
 * &hellip;
 
 ### [User stories](user-stories.md)
+
+### [Wireframe Diagram](wireframe.md)
