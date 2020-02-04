@@ -15,8 +15,13 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        buildConfigField "String", "API_KEY", getProperty("../../services/nasa.properties", "api_key")
-        buildConfigField "String", "BASE_URL", getProperty("../../services/nasa.properties", "base_url")
+        buildConfigField "String", "API_KEY", getProperty("$projectDir/../../../services/nasa.properties", "api_key")
+        buildConfigField "String", "BASE_URL", getProperty("$projectDir/../../../services/nasa.properties", "base_url")
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = ["room.schemaLocation": "$projectDir/schemas".toString()]
+            }
+        }
     }
     buildTypes {
         release {
